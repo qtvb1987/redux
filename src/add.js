@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-
-export default class Add extends React.Component {
+import { connect } from 'react-redux'
+class Add extends React.Component {
     constructor() {
         super(...arguments);
         this.state = {
@@ -10,19 +10,19 @@ export default class Add extends React.Component {
         }
     }
     getBack() {
-        if (this.props.length > 0) {
+        if (this.props.data.length > 0) {
             return (
                 <a
                     className="backLink"
                     onClick={() => {
-                        this.props.router.history.goBack();
+                        this.props.history.goBack();
                     }}
                 >返回</a>
             )
         }
     }
     render() {
-        console.log(this.props.router);
+        // console.log(this.props);
 
         return (
             <header>
@@ -54,16 +54,22 @@ export default class Add extends React.Component {
                     type="button"
                     value="添加音乐"
                     onClick={() => {
-                        console.log(this.state)
-                        this.props.add(this.state.title, this.state.singer);
+                        // console.log(this.state)
+                        this.props.dispatch({
+                            type: 'ADD',
+                            title: this.state.title,
+                            singer: this.state.singer
+                        });
                         this.setState({
                             title: '',
                             singer: ''
                         });
-                        this.props.router.history.push('/');
+                        this.props.history.push('/');
                     }}
                 ></input>
             </header>
         )
     }
 }
+
+export default connect((state) => state)(Add);

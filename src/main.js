@@ -1,8 +1,10 @@
 import React from 'react';
 import Item from './item';
-
-export default class Main extends React.Component {
+import { connect } from 'react-redux'
+class Main extends React.Component {
     render() {
+        // console.log(this.props.location.pathname);
+
         let data = this.props.data;
 
         return (
@@ -21,7 +23,12 @@ export default class Main extends React.Component {
                                 id="checkAll"
                                 checked={this.props.isCheckAll}
                                 onChange={(e) => {
-                                    this.props.checkAll(e.target.checked)
+                                    this.props.dispatch({
+                                        type: 'CHECK_ALL',
+                                        check: e.target.checked
+
+                                    })
+                                    // this.props.checkAll(e.target.checked)
                                 }}
                             />
                             <label htmlFor="checkAll">全选</label>
@@ -33,62 +40,44 @@ export default class Main extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((value, index) => {
+                    {data.map((value) => {
                         return (
                             <Item
-                                key={index}
-                                data={value}
-                                index={value.id}
-                                setCheck={this.props.setCheck}
-                                setLike={this.props.setLike}
-                                remove={this.props.remove}
+                                key={value.id}
+                                id={value.id}
+
                             />
                         )
                     })}
-                    {/* <tr className="like">
-                        <td>
-                            <input type="checkbox" name="" />
-                        </td>
-                        <td>空白格</td>
-                        <td>蔡健雅</td>
-                        <td>
-                            <input type="checkbox" checked name="" />
-                        </td>
-                        <td>
 
-                            <a >X</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="checkbox" name="" />
-                        </td>
-                        <td>全世界失眠</td>
-                        <td>蔡健雅</td>
-                        <td>
-                            <input type="checkbox" name="" />
-                        </td>
-                        <td>
-
-                            <a >X</a>
-                        </td>
-                    </tr>
-                    <tr className="selected">
-                        <td>
-                            <input type="checkbox" checked name="" />
-                        </td>
-                        <td>全世界失眠</td>
-                        <td>蔡健雅</td>
-                        <td>
-                            <input type="checkbox" name="" />
-                        </td>
-                        <td>
-
-                            <a >X</a>
-                        </td>
-                    </tr> */}
                 </tbody>
             </table>
         );
     }
 }
+/* 
+1,根据pathname 判断当前应该显示什么列表
+2，isCheckALL判断当前是否是全选状态
+3,
+*/
+export default connect((state, props) => {
+    let isCheckAll = (function () {
+        for (var i = 0; i < state.data.length; i++) {
+            if (!state.data[i].selected) {
+                return false
+            }
+            return true;
+        }
+    })();
+    let pathName = props.location.pathname;
+    if (pathName === '/') {
+        return Object.assign({}, state, { isCheckAll });
+    }
+    if (pathName === '/like') {
+        let data = {};
+
+        data.data = state.data.filter((item) => item.like);
+        return Object.assign({}, data, { isCheckAll });
+    }
+
+})(Main);

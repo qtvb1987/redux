@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Route, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux'
 import Main from './main';
 import Footer from './footer';
 
@@ -20,20 +21,19 @@ import Footer from './footer';
 //     }
 // }
 
-export default class Home extends React.Component {
+class Home extends React.Component {
     render() {
 
         let props = this.props;
         let data = props.data;
-        let selectData = data.filter((val) => val.selected);
-        let likeData = data.filter((val) => val.like);
+        let pathName = props.router.location.pathname;
 
 
         return (
             <div>
                 <header>
                     <h2 className="title">
-                        {props.pathName === "/" ? "播放" : "收藏"}列表
+                        {pathName === "/" ? "播放" : "收藏"}列表
 
                         <Link to="/add" className="addLink">添加歌曲</Link>
 
@@ -41,52 +41,18 @@ export default class Home extends React.Component {
 
 
                 </header>
-                {/* <Link to="/">所有列表</Link>
-                <Link to="/like">收藏列表</Link> */}
-                {/* <h2>列表页</h2>
-                <nav>
 
-                    <Link to="/like">收藏列表</Link>
-                </nav> */}
-                <Route path="/" exact render={() => {
-                    return (
-                        <Main
-                            data={data}
-                            isCheckAll={props.isCheckAll}
-                            checkAll={props.setCheckAll}
-                            setCheck={props.setCheck}
-                            setLike={props.setLike}
-                            remove={props.remove}
-                        />
-                    )
-                }} />
-                <Route path="/like" render={() => {
-                    if (likeData.length === 0) {
+                <Route path="/" exact component={Main} />
+                <Route path="/like" render={(e) => {
+                    if (data.filter((item) => item.like).length < 1) {
                         return <Redirect to="/" />
                     }
-                    return (
-                        <Main
-                            data={likeData}
-                            isCheckAll={props.isCheckAll}
-                            checkAll={props.setCheckAll}
-                            setCheck={props.setCheck}
-                            setLike={props.setLike}
-                            remove={props.remove}
-                        />
-                    )
+                    return <Main location={e.location} />
                 }} />
-
-                <Footer
-                    pathName={props.pathName}
-                    length={data.length}
-                    selectLength={selectData.length}
-                    likeLength={likeData.length}
-                    removeSelect={props.removeSelect}
-                    likeSelect={props.likeSelect}
-                    cancelLikeSelect={props.cancelLikeSelect}
-
-                />
+                <Footer pathName={pathName} />
             </div>
         )
     }
 }
+
+export default connect((state) => state)(Home);
