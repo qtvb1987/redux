@@ -40,10 +40,10 @@ class Main extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((value) => {
+                    {data.map((value, key) => {
                         return (
                             <Item
-                                key={value.id}
+                                key={key}
                                 id={value.id}
 
                             />
@@ -66,8 +66,9 @@ export default connect((state, props) => {
             if (!state.data[i].selected) {
                 return false
             }
-            return true;
+
         }
+        return true;
     })();
     let pathName = props.location.pathname;
     if (pathName === '/') {
